@@ -220,17 +220,20 @@ class MiniSurvey {
 						$html.= '<input name="Question'.$msqID.'_0" type="checkbox" value="'.trim($options[0]).'" '.$checked.' />';
 					}else{
 					*/
+					$class = $this->varidateClass($varidateclasses);
+					if($varidateclasses[0] == 'required') $class = 'validate-checkbox-oneormore require-one';
 					$html.= '<div class="checkboxList">'."\r\n";
 					for ($i = 0; $i < count($options); $i++) {
 						if(strlen(trim($options[$i]))==0) continue;
 						$checked=($_REQUEST['Question'.$msqID.'_'.$i]==trim($options[$i]))?'checked':'';
-						$html.= '  <div class="checkbox"><label><input name="Question'.$msqID.'_'.$i.'" type="checkbox" value="'.trim($options[$i]).'" '.$checked.' /> <span>'.$options[$i].'</span></label></div>'."\r\n";
+						$html.= '  <div class="checkbox"><label><input class="'.$class.'" name="Question'.$msqID.'_'.$i.'" type="checkbox" value="'.trim($options[$i]).'" '.$checked.' /> <span>'.$options[$i].'</span></label></div>'."\r\n";
 					}
 					$html.= '</div>';
 					//}
 					return $html;
 
 				case 'select':
+					$class = $this->varidateClass($varidateclasses);
 					if($this->frontEndMode){
 						$selected=(!$_REQUEST['Question'.$msqID])?'selected="selected"':'';
 						$html.= '<option value="" '.$selected.'>----</option>';
@@ -239,13 +242,14 @@ class MiniSurvey {
 						$checked=($_REQUEST['Question'.$msqID]==trim($option))?'selected="selected"':'';
 						$html.= '<option '.$checked.'>'.trim($option).'</option>';
 					}
-					return '<select class="form-control" name="Question'.$msqID.'" id="Question'.$msqID.'" >'.$html.'</select>';
+					return '<select class="form-control '.$class.'" name="Question'.$msqID.'" id="Question'.$msqID.'" >'.$html.'</select>';
 
 				case 'radios':
+					$class = $this->varidateClass($varidateclasses);
 					foreach($options as $option){
 						if(strlen(trim($option))==0) continue;
 						$checked=($_REQUEST['Question'.$msqID]==trim($option))?'checked':'';
-						$html.= '<div class="radio"><label><input name="Question'.$msqID.'" type="radio" value="'.trim($option).'" '.$checked.' /> <span>'.$option.'</span></label></div>';
+						$html.= '<div class="radio"><label><input class="'.$class.'" name="Question'.$msqID.'" type="radio" value="'.trim($option).'" '.$checked.' /> <span>'.$option.'</span></label></div>';
 					}
 					return $html;
 

@@ -1,8 +1,15 @@
 ;(function($) {
 $(function(){
+	$.validator.addMethod('validate-checkbox-oneormore',
+		function (value) {
+			alert(value);
+			return $('.require-one:checked').size() !== 0;
+		}, 'need a value');
+
 	$('.ccm-block-type-form').each(function(){
 		var _this = $(this);
-		 $(this).find("form").validationEngine();
+
+		$(this).find("form").validationEngine();
 		_this.find('.backbtn').on('click',function(){
 			_this.find('.form_confirm').remove();
 			_this.find('.form_entity').show();

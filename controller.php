@@ -31,11 +31,13 @@ class Controller extends Package
         $al->register('css', 'validationEngine_css', 'css/validationEngine.jquery.css', array(), $this);
         $al->register('css', 'form_support_css', 'css/form_support.css', array(), $this);
 
+        $al->register('javascript', 'jqueryvaridation', '//ajax.aspnetcdn.com/ajax/jquery.validate/1.8.1/jquery.validate.min.js', array('local' => false));
         $al->register('javascript', 'validationEngine-ja', 'js/jquery.validationEngine-ja.js', array(), $this);
         $al->register('javascript', 'validationEngine', 'js/jquery.validationEngine.js', array(), $this);
         $al->register('javascript', 'form_support_js', 'js/form_support.js', array(), $this);
 
         $al->registerGroup('suitosha', array(
+            array('javascript', 'jqueryvaridation'),
             array('javascript', 'validationEngine-ja'),
             array('javascript', 'validationEngine'),
             array('javascript', 'form_support_js'),
