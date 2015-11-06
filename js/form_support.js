@@ -8,7 +8,6 @@ $(function(){
 
 	$('.ccm-block-type-form').each(function(){
 		var _this = $(this);
-
 		$(this).find("form").validationEngine();
 		_this.find('.backbtn').on('click',function(){
 			_this.find('.form_confirm').remove();

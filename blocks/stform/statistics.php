@@ -50,7 +50,7 @@ class Statistics
             $where = ' where created <= ?';
             $q[] = $toDate;
         }
-        $count = Loader::db()->GetOne('select count(asID) from btFormAnswerSet' . $where, $q);
+        $count = Loader::db()->GetOne('select count(asID) from btFormAnswerSetSuitonForm' . $where, $q);
 
         return empty($count) ? 0 : intval($count);
     }
@@ -60,7 +60,7 @@ class Statistics
         $db = Loader::db();
 
         return $db->query('SELECT s.* FROM ' . $MiniSurvey->btTable . ' AS s, Blocks AS b, BlockTypes AS bt
-            WHERE s.bID=b.bID AND b.btID=bt.btID AND bt.btHandle="form" AND EXISTS (
+            WHERE s.bID=b.bID AND b.btID=bt.btID AND bt.btHandle="stform" AND EXISTS (
             SELECT 1 FROM CollectionVersionBlocks cvb
             INNER JOIN CollectionVersions cv ON cvb.cID=cv.cID AND cvb.cvID=cv.cvID
             INNER JOIN Pages p ON cv.cID = p.cID
@@ -84,7 +84,7 @@ class Statistics
         }
 
         //get answers sets
-        $sql = 'SELECT * FROM btFormAnswerSet AS aSet ' .
+        $sql = 'SELECT * FROM btFormAnswerSetSuitonForm AS aSet ' .
             'WHERE aSet.questionSetId=' . $questionSet . ' ORDER BY ' . $orderBySQL . ' ' . $limit;
         $answerSetsRS = $db->query($sql);
         //load answers into a nicer multi-dimensional array
@@ -97,7 +97,7 @@ class Statistics
         }
 
         //get answers
-        $sql = 'SELECT * FROM btFormAnswers AS a WHERE a.asID IN (' . join(',', $answerSetIds) . ')';
+        $sql = 'SELECT * FROM btFormAnswersSuitonForm AS a WHERE a.asID IN (' . join(',', $answerSetIds) . ')';
         $answersRS = $db->query($sql);
 
         //load answers into a nicer multi-dimensional array

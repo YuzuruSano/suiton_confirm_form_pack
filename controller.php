@@ -4,7 +4,7 @@ namespace Concrete\Package\SuitonConfirmFormPack;
 use Package;
 use BlockType;
 use Loader;
-use SinglePage;
+use Concrete\Core\Page\Single as SinglePage;
 use Core;
 use User;
 use Page;
@@ -13,6 +13,7 @@ use Exception;
 use Concrete\Core\Block\BlockController;
 use Route;
 use Router;
+use Database;
 
 defined('C5_EXECUTE') or die("Access Denied.");
 
@@ -54,18 +55,44 @@ class Controller extends Package
         if (!is_object($bt)) {
             $bt = BlockType::installBlockType('stform', $pkg);
         }
+
+        $db = Database::getActiveConnection();
+
+        $singlePages = array(
+            array('path' => '/dashboard/reports/suitonforms', 'name' => 'Suiton Form Report', 'description' => 'Show Suiton Form Stats')
+        );
+        foreach ($singlePages as $singlePage) {
+            $page = Page::getByPath($singlePage['path']);
+            if ($page->cID == 0) {
+                $newPage = SinglePage::add($singlePage['path'], $pkg);
+                $newPage->update(array('cName' => t($singlePage['name']), 'cDescription' => t($singlePage['description'])));
+                $db->query("UPDATE Pages SET cFilename=? WHERE cID = ?", array($singlePage['path'] . '.php', $newPage->cID));
+            }
+        }
     }
 
     public function upgrade()
     {
         $pkg = $this->getByID($this->getPackageID());
         parent::upgrade();
-        Installer::upgrade($pkg);
+        $db = Database::getActiveConnection();
+
+        $singlePages = array(
+            array('path' => '/dashboard/reports/suitonforms', 'name' => 'Suiton Form Report', 'description' => 'Show Suiton Form Stats')
+        );
+        foreach ($singlePages as $singlePage) {
+            $page = Page::getByPath($singlePage['path']);
+            if ($page->cID == 0) {
+                $newPage = SinglePage::add($singlePage['path'], $pkg);
+                $newPage->update(array('cName' => t($singlePage['name']), 'cDescription' => t($singlePage['description'])));
+                $db->query("UPDATE Pages SET cFilename=? WHERE cID = ?", array($singlePage['path'] . '.php', $newPage->cID));
+            }
+        }
     }
 
     public function uninstall() {
         parent::uninstall();
         $db = Loader::db();
-        $db->Execute('DROP TABLE btFormSuitonForm');
+        //$db->Execute('DROP TABLE btFormSuitonForm');
     }
 }
