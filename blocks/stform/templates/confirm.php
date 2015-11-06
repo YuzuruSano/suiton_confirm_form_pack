@@ -82,26 +82,6 @@ $captcha = $surveyBlockInfo['displayCaptcha'] ? Loader::helper('validation/captc
 
 
 	<div class="fields">
-	<?php if($confirm == 'confirm_mode'): ?>
-		<?php  foreach ($questions as $question): ?>
-			<div class="form-group field field-<?php  echo $question['type']; ?> <?php echo $errorDetails[$question['msqID']] ? 'has-error' : ''?>">
-				<label class="control-label" <?php  echo $question['labelFor']; ?>>
-					<?php  echo $question['question']; ?>
-                    <?php if ($question['required']): ?>
-                        <span class="text-muted small" style="font-weight: normal"><?php echo t("Required")?></span>
-                    <?php  endif; ?>
-				</label>
-
-				<?php
-				$q = preg_replace('/name="/', 'disabled="disabled" name="', $question['input']);
-				$q = preg_replace('/id=".+?"/', 'id=""', $q);
-				$q = preg_replace('/name=".+?"/', 'id=""', $q);
-				echo '<div class="form_confirm">'.$q.'</div>';
-				echo '<div class="form_entity">'.$question['input'].'</div>';
-				?>
-			</div>
-		<?php  endforeach; ?>
-	<?php else: ?>
 		<?php  foreach ($questions as $question): ?>
 			<div class="form-group field field-<?php  echo $question['type']; ?> <?php echo $errorDetails[$question['msqID']] ? 'has-error' : ''?>">
 				<label class="control-label" <?php  echo $question['labelFor']; ?>>
@@ -110,12 +90,21 @@ $captcha = $surveyBlockInfo['displayCaptcha'] ? Loader::helper('validation/captc
                         <span class="text-muted small" style="font-weight: normal">*</span>
                     <?php  endif; ?>
 				</label>
-				<?php if($question['addText']) echo '<p>'.nl2br(h($question['addText'])).'</p>' ?>
-				<?php  echo $question['input']; ?>
+
+				<?php if($confirm == 'confirm_mode'): ?>
+					<?php
+						$q = preg_replace('/name="/', 'disabled="disabled" name="', $question['input']);
+						$q = preg_replace('/id=".+?"/', 'id=""', $q);
+						$q = preg_replace('/name=".+?"/', 'name=""', $q);
+						echo '<div class="form_confirm">'.$q.'</div>';
+						echo '<div class="form_entity">'.$question['input'].'</div>';
+					?>
+				<?php else: ?>
+					<?php if($question['addText']) echo '<p>'.nl2br(h($question['addText'])).'</p>' ?>
+					<?php  echo $question['input']; ?>
+				<?php endif; ?>
 			</div>
 		<?php  endforeach; ?>
-	<?php endif; ?>
-
 	</div><!-- .fields -->
 
 	<?php  if ($captcha): ?>
