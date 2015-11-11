@@ -1,14 +1,24 @@
 ;(function($) {
 $(function(){
-	$.validator.addMethod('validate-checkbox-oneormore',
-		function (value) {
-			alert(value);
-			return $('.require-one:checked').size() !== 0;
-		}, 'need a value');
+	_.each($('.ccm-block-type-form'),function(item){
+		var _this = $(item);
 
-	$('.ccm-block-type-form').each(function(){
-		var _this = $(this);
-		$(this).find("form").validationEngine();
+		_this.find("form").validationEngine('attach', {
+			promptPosition: "topLeft:130",
+			onFieldFailure:function(field){
+				if(field.hasClass('input-checkbox')){
+					$(field).closest('label').before(field.prev());
+				}
+			},
+			onValidationComplete: function(form, status){
+				_.each($('.checkboxList'),function(item){
+					var first = $(item).find('.formError').first();
+					$(item).find('.formError').remove().end()
+					.find('label').first().before(first);
+				});
+			}
+		});
+
 		_this.find('.backbtn').on('click',function(){
 			_this.find('.form_confirm').remove();
 			_this.find('.form_entity').show();
@@ -25,3 +35,12 @@ $(function(){
 	});
 });
 })(jQuery);
+
+function st_checkbox_rule(field, rules, i, options){
+	var container = $(field).closest('.checkboxList');
+	if($('input:checked',container).length === 0){
+		options.showArrow = false;
+		options.showArrowOnRadioAndCheckbox = true;
+		return '一つ以上の値にチェックを入れてください';
+	}
+}

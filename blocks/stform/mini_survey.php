@@ -221,7 +221,7 @@ class MiniSurvey {
 					}else{
 					*/
 					$class = $this->varidateClass($varidateclasses);
-					if($varidateclasses[0] == 'required') $class = 'validate-checkbox-oneormore require-one';
+					if($varidateclasses[0] == 'required') $class = 'validate[funcCall[st_checkbox_rule]] require-one input-checkbox';
 					$html.= '<div class="checkboxList">'."\r\n";
 					for ($i = 0; $i < count($options); $i++) {
 						if(strlen(trim($options[$i]))==0) continue;
