@@ -11,11 +11,15 @@ $(function(){
 				}
 			},
 			onValidationComplete: function(form, status){
-				_.each($('.checkboxList'),function(item){
-					var first = $(item).find('.formError').first();
-					$(item).find('.formError').remove().end()
-					.find('label').first().before(first);
-				});
+				if (status === true){
+					return true;
+				}else{
+					_.each($('.checkboxList'),function(item){
+						var first = $(item).find('.formError').first();
+						$(item).find('.formError').remove().end()
+						.find('label').first().before(first);
+					});
+				}
 			}
 		});
 
