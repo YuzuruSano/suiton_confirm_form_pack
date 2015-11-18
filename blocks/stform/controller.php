@@ -34,20 +34,6 @@ class Controller extends BlockController
     protected $lastAnswerSetId = 0;
     protected $btName = "Suiton Confirm Form";
 
-    /* ===============================================
-    バリデーション用のjQueryライブラリを追加
-    =============================================== */
-    // public function on_page_view() {
-    //     $html = Core::make('helper/html');;
-    //     $this->addFooterItem($html->javascript('form_support.js'));
-    //     $scripts = '<script>(function($) {$(function(){$(".ccm-block-type-form").find("form").validationEngine();});})(jQuery);</script>';
-    //     $this->addFooterItem($html->javascript('jquery.validationEngine-ja.js'));
-    //     $this->addFooterItem($html->javascript('jquery.validationEngine.js'));
-    //     $this->addHeaderItem($html->css('validationEngine.jquery.css'));
-    //     $this->addHeaderItem($html->css('form_support.css'));
-    //     $this->addFooterItem($scripts);
-    // }
-
     /**
      * Used for localization. If we want to localize the name/description we have to include this.
      *
@@ -447,8 +433,8 @@ class Controller extends BlockController
                     if (!$answerFound) {
                         $notCompleted = 1;
                     }
-                } elseif ($row['inputType'] == 'fileupload') {
-                    if (!isset($_FILES['Question'.$row['msqID']]) || !is_uploaded_file($_FILES['Question'.$row['msqID']]['tmp_name'])) {
+                } elseif ($row['inputType'] == 'fileupload') {//$_POST['files']〜は確認画面に遷移後発生する
+                    if ((!isset($_FILES['Question'.$row['msqID']]) || !is_uploaded_file($_FILES['Question'.$row['msqID']]['tmp_name'])) && (!isset($_POST['files']['Question'.$row['msqID']]['tmp_name']) || !file_exists($_POST['files']['Question'.$row['msqID']]['tmp_name']))) {
                         $notCompleted = 1;
                     }
                 } elseif (!strlen(trim($_POST['Question'.$row['msqID']]))) {
@@ -461,35 +447,91 @@ class Controller extends BlockController
             }
         }
 
-        //try importing the file if everything else went ok
-        $tmpFileIds = array();
-        if (!count($errors)) {
+        if (count($errors)) {
+            $this->set('formResponse', t('Please correct the following errors:'));
+            $this->set('errors', $errors);
+            $this->set('errorDetails', $errorDetails);
+        } elseif(isset($_POST['post_type']) && $_POST['post_type'] == 'confirm'){
+            /* ===============================================
+            確認画面以降のファイルアップロード処理を追加
+            =============================================== */
+            // ファイルアップロードフォームからの初回アップロードを確認画面のviewに渡す
+            // viewではhiddenで扱う
+            if($_FILES){
+                $this->clean_tmp_dir();
+                $now = date('YmdHis');
+                // ファイルインフォデータベースを開く
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                foreach($_FILES as $key => $val){
+                    if(!$val['tmp_name']) continue;
+                    $files[$key]['name'] = $val['name'];
+                    // アップロードされたファイルが画像かどうかチェック
+                    list($mime,$ext) = explode('/',finfo_file($finfo, $val['tmp_name']));
+                    if($mime!='image') $err[] = 'ファイル{$key} は画像を選択してください';
+                    if($mime!='image') unset($files[$key]);
+                    if($mime!='image') continue;
+                    // 仮ディレクトリへファイルをアップロード
+                    copy($val['tmp_name'] , $this->get_tmp_dir().$now.'_'.$key.$ext);
+                    $files[$key]['tmp_name'] =  $this->get_tmp_dir().$now.'_'.$key.$ext;
+                }
+                finfo_close($finfo);
+            }else{
+                //確認画面からファイルを入れ替えせず、再度確認画面に進んだ場合
+                //確認画面から送信に進んだ場合
+                if(is_array($_POST['files'])){
+                    $files = $_POST['files'];
+                }else{
+                    $files = null;
+                }
+            }
+            //ファイル関連データをviewへ
+            $this->set('files_data', $files);
+            //確認ステータスをviewへ
+            $this->set('confirm', 'confirm_mode');
+        }else { //no form errors
+            $tmpFileIds = array();
             foreach ($rows as $row) {
                 if ($row['inputType'] != 'fileupload') {
                     continue;
                 }
+
                 $questionName = 'Question'.$row['msqID'];
+
                 if (!intval($row['required']) &&
                     (
                     !isset($_FILES[$questionName]['tmp_name']) || !is_uploaded_file($_FILES[$questionName]['tmp_name'])
                     )
+                    &&
+                    (
+                     !isset($_POST['files'][$questionName]['tmp_name']) || !file_exists($_POST['files'][$questionName]['tmp_name'])
+                    )
                 ) {
                     continue;
                 }
+
                 $fi = new FileImporter();
-                $resp = $fi->import($_FILES[$questionName]['tmp_name'], $_FILES[$questionName]['name']);
+                //$_POST['files']〜は確認画面に遷移後発生する
+                if(isset($_POST['files'][$questionName]['tmp_name']) || is_uploaded_file($_POST['files'][$questionName]['tmp_name'])){
+                    $tmp_name = $_POST['files'][$questionName]['tmp_name'];
+                    $name = $_POST['files'][$questionName]['name'];
+                }else{
+                    $tmp_name = $_FILES[$questionName]['tmp_name'];
+                    $name = $_FILES[$questionName]['name'];
+                }
+                //ファイルマネージャにインポート
+                $resp = $fi->import($tmp_name , $name);
+
                 if (!($resp instanceof Version)) {
                     switch ($resp) {
-                    case FileImporter::E_FILE_INVALID_EXTENSION:
-                        $errors['fileupload'] = t('Invalid file extension.');
-                        $errorDetails[$row['msqID']]['fileupload'] = $errors['fileupload'];
-                        break;
-                    case FileImporter::E_FILE_INVALID:
-                        $errors['fileupload'] = t('Invalid file.');
-                        $errorDetails[$row['msqID']]['fileupload'] = $errors['fileupload'];
-                        break;
-
-                }
+                        case FileImporter::E_FILE_INVALID_EXTENSION:
+                            $errors['fileupload'] = t('Invalid file extension.');
+                            $errorDetails[$row['msqID']]['fileupload'] = $errors['fileupload'];
+                            break;
+                        case FileImporter::E_FILE_INVALID:
+                            $errors['fileupload'] = t('Invalid file.');
+                            $errorDetails[$row['msqID']]['fileupload'] = $errors['fileupload'];
+                            break;
+                    }
                 } else {
                     $tmpFileIds[intval($row['msqID'])] = $resp->getFileID();
                     if (intval($this->addFilesToSet)) {
@@ -501,15 +543,9 @@ class Controller extends BlockController
                     }
                 }
             }
-        }
+            //一時ファイルを空に
+            $this->clean_tmp_dir();
 
-        if (count($errors)) {
-            $this->set('formResponse', t('Please correct the following errors:'));
-            $this->set('errors', $errors);
-            $this->set('errorDetails', $errorDetails);
-        } elseif(isset($_POST['post_type']) && $_POST['post_type'] == 'confirm'){
-            $this->set('confirm', 'confirm_mode');
-        }else { //no form errors
             //save main survey record
             $u = new User();
             $uID = 0;
@@ -711,5 +747,42 @@ class Controller extends BlockController
         parent::delete();
 
         return $deleteData;
+    }
+
+    /**
+     * 一時保存ファイルの取得
+     *
+     *
+     */
+    protected function get_tmp_dir(){
+        return $this->get_pkg_path().'/tmp/';
+    }
+    /**
+     * パッケージディレクトリのパス取得
+     *
+     *
+     */
+    protected function get_pkg_path(){
+        $b = $this->getBlockObject();
+        $pkgID = $b->getPackageID();
+        $package = Package::getByID($pkgID);
+
+        return $pkgpath = $package->getPackagePath();
+    }
+    /**
+     * 一時保存ディクトリを空にする
+     *
+     *
+     */
+    protected function clean_tmp_dir() {
+        $dir = $this->get_tmp_dir();
+        if ( $dirHandle = opendir ($dir)) {
+            while ( false !== ( $fileName = readdir ( $dirHandle ) ) ) {
+                if ( $fileName != "." && $fileName != ".." && $fileName != ".gitkeep" ) {
+                    unlink ( $dir.$fileName );
+                }
+            }
+            closedir ( $dirHandle );
+        }
     }
 }

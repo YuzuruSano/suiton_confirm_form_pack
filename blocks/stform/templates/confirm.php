@@ -93,11 +93,21 @@ $captcha = $surveyBlockInfo['displayCaptcha'] ? Loader::helper('validation/captc
 
 				<?php if($confirm == 'confirm_mode'): ?>
 					<?php
+					if($question['inputType'] == 'fileupload'){
+						foreach($files_data as $key => $val){
+							if($key == $question['qname']){
+								echo '<div id="'.$question['qname'].'" class="form_confirm_file">'.$val['name'].'</div>';
+								echo '<input id="hidden_name_'.$question['qname'].'" type="hidden" value="'.$val['name'].'" name="files['.$question['qname'].'][name]">';
+								echo '<input id="hidden_name_tmp_name_'.$question['qname'].'" type="hidden" value="'.$val['tmp_name'].'" name="files['.$question['qname'].'][tmp_name]">';
+							}
+						}
+					}else{
 						$q = preg_replace('/name="/', 'disabled="disabled" name="', $question['input']);
 						$q = preg_replace('/id=".+?"/', 'id=""', $q);
-						$q = preg_replace('/name=".+?"/', 'name=""', $q);
+						$q = preg_replace('/name=".+?"/', 'id=""', $q);
 						echo '<div class="form_confirm">'.$q.'</div>';
 						echo '<div class="form_entity">'.$question['input'].'</div>';
+					}
 					?>
 				<?php else: ?>
 					<?php if($question['addText']) echo '<p>'.nl2br(h($question['addText'])).'</p>' ?>
@@ -124,7 +134,7 @@ $captcha = $surveyBlockInfo['displayCaptcha'] ? Loader::helper('validation/captc
 
 	<div class="form-actions">
 		<?php if($confirm == 'confirm_mode'): ?>
-			<a href="dummy" class="backbtn">戻る</a>
+			<a href="dummy" class="backbtn">訂正する</a>
 			<input class="submit" type="submit" name="Submit" class="btn btn-primary" value="<?php  echo h(t($survey->submitText)); ?>" />
 			<input class="hidden_status" type="hidden" value="sendok" name="post_type">
 		<?php else: ?>
