@@ -116,23 +116,9 @@ $captcha = $surveyBlockInfo['displayCaptcha'] ? Loader::helper('validation/captc
 					?>
 				<?php else: ?>
 					<?php
-					if($question['inputType'] == 'fileupload'){
-						if(!is_null($files_data)){
-							foreach($files_data as $key => $val){
-								if($key == $question['qname']){
-									echo '<div id="'.$question['qname'].'" class="form_confirm_file">'.$val['name'].'</div>';
-									echo '<input id="hidden_name_'.$question['qname'].'" type="hidden" value="'.$val['name'].'" name="files['.$question['qname'].'][name]">';
-									echo '<input id="hidden_name_tmp_name_'.$question['qname'].'" type="hidden" value="'.$val['tmp_name'].'" name="files['.$question['qname'].'][tmp_name]">';
-								}
-							}
-						}else{
-							if($question['addText']) echo '<p>'.nl2br(h($question['addText'])).'</p>' ;
-							echo $question['input'];
-						}
-					}else{
 						if($question['addText']) echo '<p>'.nl2br(h($question['addText'])).'</p>' ;
 						echo $question['input'];
-					}?>
+					?>
 				<?php endif; ?>
 			</div>
 		<?php  endforeach; ?>
