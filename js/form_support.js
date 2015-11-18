@@ -26,6 +26,7 @@ $(function(){
 		_this.find('.backbtn').on('click',function(){
 			_this.find('.form_confirm').remove();
 			_this.find('.form_entity').show();
+			_this.find('.delete').show();
 			_this.find('.submit').val('確認');
 			_this.find('.hidden_status').val('confirm');
 			$(this).remove();

@@ -448,45 +448,44 @@ class Controller extends BlockController
             }
         }
 
+        /* ===============================================
+        確認画面以降のファイルアップロード処理を追加
+        =============================================== */
+        // ファイルアップロードフォームからの初回アップロードを確認画面のviewに渡す
+        // viewではhiddenで扱う
+        $files = $_POST['files'];
+        if(!is_null($_FILES) && isset($_FILES) && is_array($_FILES)){
+            if(is_null($files)){
+                $this->clean_tmp_dir();
+            }
+            $now = date('YmdHis');
+            // ファイルインフォデータベースを開く
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            foreach($_FILES as $key => $val){
+                if(!$val['tmp_name']) continue;
+                $files[$key]['name'] = $val['name'];
+                // アップロードされたファイルが画像かどうかチェック
+                list($mime,$ext) = explode('/',finfo_file($finfo, $val['tmp_name']));
+                if($mime!='image') $err[] = 'ファイル{$key} は画像を選択してください';
+                if($mime!='image') unset($files[$key]);
+                if($mime!='image') continue;
+                // 仮ディレクトリへファイルをアップロード
+                copy($val['tmp_name'] , $this->get_tmp_dir().$now.'_'.$key.$ext);
+                $files[$key]['tmp_name'] =  $this->get_tmp_dir().$now.'_'.$key.$ext;
+            }
+            finfo_close($finfo);
+        }
+
+        //ファイル関連データをviewへ
+        $this->set('files_data', $files);
+
         if (count($errors)) {
             $this->set('formResponse', t('Please correct the following errors:'));
             $this->set('errors', $errors);
             $this->set('errorDetails', $errorDetails);
+            //確認ステータスをviewへ
+            $this->set('confirm', 'confirm_mode');
         } elseif(isset($_POST['post_type']) && $_POST['post_type'] == 'confirm'){
-            /* ===============================================
-            確認画面以降のファイルアップロード処理を追加
-            =============================================== */
-            // ファイルアップロードフォームからの初回アップロードを確認画面のviewに渡す
-            // viewではhiddenで扱う
-            if($_FILES){
-                $this->clean_tmp_dir();
-                $now = date('YmdHis');
-                // ファイルインフォデータベースを開く
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                foreach($_FILES as $key => $val){
-                    if(!$val['tmp_name']) continue;
-                    $files[$key]['name'] = $val['name'];
-                    // アップロードされたファイルが画像かどうかチェック
-                    list($mime,$ext) = explode('/',finfo_file($finfo, $val['tmp_name']));
-                    if($mime!='image') $err[] = 'ファイル{$key} は画像を選択してください';
-                    if($mime!='image') unset($files[$key]);
-                    if($mime!='image') continue;
-                    // 仮ディレクトリへファイルをアップロード
-                    copy($val['tmp_name'] , $this->get_tmp_dir().$now.'_'.$key.$ext);
-                    $files[$key]['tmp_name'] =  $this->get_tmp_dir().$now.'_'.$key.$ext;
-                }
-                finfo_close($finfo);
-            }else{
-                //確認画面からファイルを入れ替えせず、再度確認画面に進んだ場合
-                //確認画面から送信に進んだ場合
-                if(is_array($_POST['files'])){
-                    $files = $_POST['files'];
-                }else{
-                    $files = null;
-                }
-            }
-            //ファイル関連データをviewへ
-            $this->set('files_data', $files);
             //確認ステータスをviewへ
             $this->set('confirm', 'confirm_mode');
         }else { //no form errors

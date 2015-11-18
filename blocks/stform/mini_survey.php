@@ -254,7 +254,8 @@ class MiniSurvey {
 					return $html;
 
 				case 'fileupload':
-					$html='<input type="file" name="Question'.$msqID.'" class="form-control" id="Question'.$msqID.'" />';
+					$class = $this->varidateClass($varidateclasses);
+					$html='<input type="file" name="Question'.$msqID.'" class="form-control '.$class.'" id="Question'.$msqID.'" />';
 					return $html;
 
 				case 'text':
