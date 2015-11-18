@@ -299,6 +299,32 @@ class MiniSurvey {
 			}
 		}
 
+		function convertInputType($question,$files_data = null){
+			if(!is_null($files_data)){
+				foreach($files_data as $key => $val){
+					if($key == $question['qname']){
+						$inputHtml = '<div id="'.$question['qname'].'" class="form_confirm_file">'.$val['name'].'</div>';
+						$inputHtml .= '<input id="hidden_name_'.$question['qname'].'" type="hidden" value="'.$val['name'].'" name="files['.$question['qname'].'][name]">';
+						$inputHtml .= '<input id="hidden_name_tmp_name_'.$question['qname'].'" type="hidden" value="'.$val['tmp_name'].'" name="files['.$question['qname'].'][tmp_name]">';
+					}else{
+						$q = preg_replace('/name="/', 'disabled="disabled" name="', $question['input']);
+						$q = preg_replace('/id=".+?"/', 'id=""', $q);
+						$q = preg_replace('/name=".+?"/', 'id=""', $q);
+						$inputHtml = '<div class="form_confirm">'.$q.'</div>';
+						$inputHtml .= '<div class="form_entity">'.$question['input'].'</div>';
+					}
+				}
+			}else{
+				$q = preg_replace('/name="/', 'disabled="disabled" name="', $question['input']);
+				$q = preg_replace('/id=".+?"/', 'id=""', $q);
+				$q = preg_replace('/name=".+?"/', 'id=""', $q);
+				$inputHtml = '<div class="form_confirm">'.$q.'</div>';
+				$inputHtml .= '<div class="form_entity">'.$question['input'].'</div>';
+			}
+
+			return $inputHtml;
+		}
+
 		function getMiniSurveyBlockInfo($bID){
 			$rs=$this->db->query('SELECT * FROM btFormSuitonForm WHERE bID='.intval($bID).' LIMIT 1' );
 			return $rs->fetchRow();
