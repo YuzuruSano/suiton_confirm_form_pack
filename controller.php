@@ -24,7 +24,7 @@ class Controller extends Package
     protected $pkgName = "Suiton Confirm Form";
     protected $pkgHandle = 'suiton_confirm_form_pack';
     protected $appVersionRequired = '5.7.3.1';
-    protected $pkgVersion = '1.0.0';
+    protected $pkgVersion = '1.1.0';
 
      public function on_start()
     {
