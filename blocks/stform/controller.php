@@ -7,6 +7,7 @@ use Core;
 use Database;
 use User;
 use Page;
+use Package;
 use UserInfo;
 use Exception;
 use FileImporter;
