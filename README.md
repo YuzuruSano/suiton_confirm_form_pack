@@ -12,19 +12,19 @@
 
 ## インストール
 
-zipを解凍してpackages/へ
-admin権限でログインして/index.php/dashboard/extend/installへ
+zipを解凍してpackages/へ  
+admin権限でログインして/index.php/dashboard/extend/installへ  
 「Suiton Confirm Form」をインストール
 
 ## 使い方
 
-ブロックに「Suiton Confirm Form」を追加
-各種項目設定（既存のフォームブロックとほぼ同じ流れ）
-テンプレート「confirm」を選択
+ブロックに「Suiton Confirm Form」を追加  
+各種項目設定（既存のフォームブロックとほぼ同じ流れ）  
+テンプレート「confirm」を選択  
 
 データの確認は /dashboard/reports/suitonforms から
 
 ## 現状
 
-各種バリデーション機能のチェック中
+各種バリデーション機能のチェック中  
 ご利用はまだ自己責任で・・・
