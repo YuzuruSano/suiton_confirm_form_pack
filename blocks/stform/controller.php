@@ -654,14 +654,14 @@ class Controller extends BlockController
                 管理者用メール
                 =============================================== */
                 $mh->to($this->recipientEmail);
-                $mh->from($formFormEmailAddress);
+                $mh->from($replyToEmailAddress);
                 $mh->replyto($replyToEmailAddress);
                 $mh->addParameter('formName', $this->surveyName);
                 $mh->addParameter('questionSetId', $this->questionSetId);
                 $mh->addParameter('questionAnswerPairs', $questionAnswerPairs);
                 $mh->addParameter('adminMessBefore', $this->adminMessBefore);
                 $mh->addParameter('adminMessAfter', $this->adminMessAfter);
-                $mh->load('suiton_block_form_submission','suiton_confirm_form_pack');//application/mail の該当ファイルでメッセージ内容変更可
+                $mh->load('suiton_block_form_submission','suiton_confirm_form_pack');///mail の該当ファイルでメッセージ内容変更可
                 if($this->adminSubject){
                     $mh->setSubject(sprintf($this->adminSubject, $this->surveyName));//件名編集
                 }else{
@@ -683,7 +683,7 @@ class Controller extends BlockController
                     $mh->addParameter('titleInFormKey', $this->titleInFormKey);
                     $mh->addParameter('clientMessBefore', $this->clientMessBefore);
                     $mh->addParameter('clientMessAfter', $this->clientMessAfter);
-                    $mh->load('suiton_block_form_confirm','suiton_confirm_form_pack');//application/mail の該当ファイルでメッセージ内容変更可
+                    $mh->load('suiton_block_form_confirm','suiton_confirm_form_pack');///mail の該当ファイルでメッセージ内容変更可
                     if($this->clientSubject){
                         $mh->setSubject(sprintf($this->clientSubject, $this->surveyName).":".time());//件名編集
                     }else{
