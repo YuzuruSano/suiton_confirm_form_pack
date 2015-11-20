@@ -10,6 +10,12 @@
 
 ※基本はformブロックの拡張
 
+## インストール
+
+zipを解凍してpackages/へ
+admin権限でログインして/index.php/dashboard/extend/installへ
+「Suiton Confirm Form」をインストール
+
 ## 使い方
 
 ブロックに「Suiton Confirm Form」を追加
