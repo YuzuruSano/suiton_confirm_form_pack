@@ -3,3 +3,24 @@
 .form_entity {
 	display: none;
 }
+.form_confirm input[type="text"],
+.form_confirm input[type="email"],
+.form_confirm input[type="tel"],
+.form_confirm input[type="url"],
+.form_confirm input[type="file"],
+.form_confirm textarea,
+.form_confirm select {
+	background-color: transparent!important;
+	border: none;
+	resize: none;
+	box-shadow:none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+.form_confirm {
+	overflow: hidden;
+}
+.form_confirm select{
+	width: 130%;
+}

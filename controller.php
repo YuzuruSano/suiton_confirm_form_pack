@@ -38,6 +38,7 @@ class Controller extends Package
         $al->register('javascript', 'form_support_js', 'js/form_support.js', array(), $this);
 
         $al->registerGroup('suitosha', array(
+            array('javascript', 'underscore'),
             array('javascript', 'jqueryvaridation'),
             array('javascript', 'validationEngine-ja'),
             array('javascript', 'validationEngine'),
