@@ -464,11 +464,11 @@ class Controller extends BlockController
             foreach($_FILES as $key => $val){
                 if(!$val['tmp_name']) continue;
                 $files[$key]['name'] = $val['name'];
-                // アップロードされたファイルが画像かどうかチェック
                 list($mime,$ext) = explode('/',finfo_file($finfo, $val['tmp_name']));
-                if($mime!='image') $err[] = 'ファイル{$key} は画像を選択してください';
-                if($mime!='image') unset($files[$key]);
-                if($mime!='image') continue;
+                // アップロードされたファイルが画像かどうかチェック
+                // if($mime!='image') $err[] = 'ファイル{$key} は画像を選択してください';
+                // if($mime!='image') unset($files[$key]);
+                // if($mime!='image') continue;
                 // 仮ディレクトリへファイルをアップロード
                 copy($val['tmp_name'] , $this->get_tmp_dir().$now.'_'.$key.$ext);
                 $files[$key]['tmp_name'] =  $this->get_tmp_dir().$now.'_'.$key.$ext;
