@@ -52,12 +52,13 @@ $(function(){
 
 	$('.delete').on('click',function(){
 		var this_val = $(this).val();
+		var _class = $(id).attr('class');
 		var id = '#' + this_val;
 		$(id).val('');
 		$('#' + 'hidden_name_tmp_name_'+this_val).remove();
 		$('#' + 'hidden_name_'+this_val).remove();
 
-		$(id).replaceWith('<input id="'+ this_val +'" class="form-control" type="file" name="'+ this_val +'">');
+		$(id).replaceWith('<input id="'+ $(this).val() +'" class="form-control" type="file" name="'+ $(this).val() +'">');
 		$(this).hide();
 
 		check_file_input();
