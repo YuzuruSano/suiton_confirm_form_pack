@@ -470,8 +470,8 @@ class Controller extends BlockController
                 // if($mime!='image') unset($files[$key]);
                 // if($mime!='image') continue;
                 // 仮ディレクトリへファイルをアップロード
-                copy($val['tmp_name'] , $this->get_tmp_dir().$now.'_'.$key.$ext);
-                $files[$key]['tmp_name'] =  $this->get_tmp_dir().$now.'_'.$key.$ext;
+                copy($val['tmp_name'] , $this->get_tmp_dir().$now.'_'.$key.'.'.$ext);
+                $files[$key]['tmp_name'] =  $this->get_tmp_dir().$now.'_'.$key.'.'.$ext;
             }
             finfo_close($finfo);
         }
