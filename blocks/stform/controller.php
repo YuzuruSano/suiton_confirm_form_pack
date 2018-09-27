@@ -479,7 +479,7 @@ class Controller extends BlockController
         //ファイル関連データをviewへ
         $this->set('files_data', $files);
 
-        if (count($errors)) {
+        if (is_array($errors) && count($errors) > 0) {
             $this->set('formResponse', t('Please correct the following errors:'));
             $this->set('errors', $errors);
             $this->set('errorDetails', $errorDetails);
